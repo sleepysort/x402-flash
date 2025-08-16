@@ -1,0 +1,11 @@
+{
+  "name": "demo-api-server",
+  "version": "1.0.0",
+  "description": "Demo API server that implements the 'flash' x402 scheme.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
