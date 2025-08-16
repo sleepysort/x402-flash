@@ -1,0 +1,3 @@
+[submodule "settlement-layer/lib/forge-std"]
+	path = settlement-layer/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
