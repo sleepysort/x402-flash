@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(winget install:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(node:*)",
+      "Bash(npx hardhat run:*)",
+      "Bash(dir node_modules@chainlinkcontractssrcv0.8interfaces*.sol)",
+      "Bash(npx hardhat compile:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx hardhat verify:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm install:*)",
+      "Bash(yarn add axios)",
+      "Bash(timeout 30 npx hardhat run scripts/keeper-service.js --network sepolia)",
+      "Bash(mv:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm list:*)",
+      "Bash(timeout 45 npx hardhat run scripts/keeper-service.js --network sepolia)",
+      "Bash(cast call:*)",
+      "Bash(grep:*)",
+      "Bash(npx hardhat:*)",
+      "Bash(cast balance:*)",
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": []
+  }
+}
