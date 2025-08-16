@@ -1,0 +1,23 @@
+{
+  "name": "curl-x402",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "command-line-args": "^6.0.1",
+    "viem": "^2.33.3",
+    "x402-fetch": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/command-line-args": "^5.2.3",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  }
+}
