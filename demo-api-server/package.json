@@ -14,7 +14,8 @@
     "express": "^5.1.0",
     "typescript-ioc": "^3.0.5",
     "typescript-logging": "^2.2.0",
-    "typescript-logging-category-style": "^2.2.0"
+    "typescript-logging-category-style": "^2.2.0",
+    "x402-express": "^0.4.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

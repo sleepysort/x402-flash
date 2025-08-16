@@ -5,6 +5,7 @@ import { Server } from './server';
 
 const server = new Server(express());
 
+server.setupPaymentMiddleware();
 server.install("/hello", new HelloModule());
 
 server.start(3000);
