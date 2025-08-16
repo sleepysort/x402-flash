@@ -1,0 +1,8 @@
+# Ignore node modules and build outputs.
+**/node_modules
+**/out
+**/dist
+
+# Ignore environment files and system files.
+**/.env
+**/.DS_Store
