@@ -13,7 +13,10 @@ const args = commandLineArgs([
 const account = privateKeyToAccount(args.key);
 
 const fetchWithPayment = args.flash ? wrapFetchWithFlashPayment(fetch, account) : wrapFetchWithPayment(fetch, account);
-
+console.log("=======================================================");
+console.log("Fetching data using x402 with scheme: " + (args.flash ? "\"flash\"" : "\"exact\""));
+console.log("GET " + args.url);
+console.log("=======================================================");
 const t1 = Date.now();
 const response = await fetchWithPayment(args.url, { method: "GET" })
 const t2 = Date.now();
@@ -23,8 +26,12 @@ if (xPaymentResponse) {
   const paymentResponse = decodeXPaymentResponse(xPaymentResponse);
   console.log(paymentResponse);
 }
-console.log(body);
-console.log(`Time taken: ${t2 - t1} ms`);
+
+console.log("Response: " + response.status + " " + response.statusText);
+console.log("Response body: " + body);
+console.log();
+console.log(`Total response latency: ${t2 - t1}ms`);
+console.log("=======================================================");
 
 export function wrapFetchWithFlashPayment(
   fetchFn: typeof fetch,
