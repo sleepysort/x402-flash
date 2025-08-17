@@ -10,9 +10,17 @@ export const USDC_ADDRESSES = {
 } as const
 
 export function getCirclePaymasterAddress(chainId: number): Address {
-  return CIRCLE_PAYMASTER_ADDRESSES[chainId as keyof typeof CIRCLE_PAYMASTER_ADDRESSES]
+  const address = CIRCLE_PAYMASTER_ADDRESSES[chainId as keyof typeof CIRCLE_PAYMASTER_ADDRESSES]
+  if (!address) {
+    throw new Error(`Circle Paymaster not available on chain ${chainId}. Supported chains: ${Object.keys(CIRCLE_PAYMASTER_ADDRESSES).join(', ')}`)
+  }
+  return address
 }
 
 export function getUSDCAddress(chainId: number): Address {
-  return USDC_ADDRESSES[chainId as keyof typeof USDC_ADDRESSES]
+  const address = USDC_ADDRESSES[chainId as keyof typeof USDC_ADDRESSES]
+  if (!address) {
+    throw new Error(`USDC not available on chain ${chainId}. Supported chains: ${Object.keys(USDC_ADDRESSES).join(', ')}`)
+  }
+  return address
 }

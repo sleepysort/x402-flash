@@ -34,7 +34,8 @@
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
     "viem": "^2.33.3",
-    "wagmi": "^2.16.3"
+    "wagmi": "^2.16.3",
+    "x402-fetch": "^0.5.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

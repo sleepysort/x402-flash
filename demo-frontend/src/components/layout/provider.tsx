@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { OnchainKitProvider } from '@coinbase/onchainkit';
-import { baseSepolia, base } from 'wagmi/chains';
+import { baseSepolia } from 'wagmi/chains';
 import { Config } from '@coinbase/cdp-core';
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,9 +21,8 @@ const cdpConfig: Config = {
 const connector = createCDPEmbeddedWalletConnector({
   cdpConfig: cdpConfig,
   providerConfig: {
-    chains: [base, baseSepolia],
+    chains: [baseSepolia],
     transports: {
-      [base.id]: http(),
       [baseSepolia.id]: http()
     }
   }
@@ -32,9 +31,8 @@ const connector = createCDPEmbeddedWalletConnector({
 // Configure Wagmi with CDP connector
 const wagmiConfig = createConfig({
   connectors: [connector],
-  chains: [base, baseSepolia],
+  chains: [baseSepolia],
   transports: {
-    [base.id]: http(),
     [baseSepolia.id]: http(),
   },
 });
