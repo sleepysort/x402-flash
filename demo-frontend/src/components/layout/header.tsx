@@ -44,7 +44,7 @@ export function Header() {
           className="hover:bg-gray-100"
         >
           <Link
-            href="https://github.com/sleepysort/x402-flashh"
+            href="https://github.com/sleepysort/x402-flash"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"

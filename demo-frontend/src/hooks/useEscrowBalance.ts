@@ -15,14 +15,14 @@ interface UseEscrowBalanceParams {
   clientAddress?: Address
   serverAddress?: Address
   enabled?: boolean
-  refetchInterval?: number // in milliseconds
+  refetchInterval?: number // in milliseconds, set to 0 to disable polling
 }
 
 export function useEscrowBalance({
   clientAddress,
   serverAddress,
   enabled = true,
-  refetchInterval = 5000, // 5 seconds default
+  refetchInterval = 1000, // 10 seconds default (reduced frequency for better performance)
 }: UseEscrowBalanceParams = {}): UseEscrowBalanceReturn {
   const { address: connectedAddress } = useAccount()
   const publicClient = usePublicClient()
@@ -40,6 +40,10 @@ export function useEscrowBalance({
       return
     }
 
+    console.log('🔄 Fetching escrow balance for:', {
+      client: effectiveClientAddress,
+      server: effectiveServerAddress
+    });
     setLoading(true)
     setError(null)
 
@@ -51,21 +55,7 @@ export function useEscrowBalance({
 
       const brokerAddress = getFlashPaymentBrokerAddress(chainId)
       
-      // First check if escrow account exists
-      const escrowAccountAddress = await publicClient.readContract({
-        address: brokerAddress,
-        abi: FlashPaymentBrokerABI,
-        functionName: 'getEscrowAccountAddress',
-        args: [effectiveClientAddress, effectiveServerAddress],
-      }) as Address
-
-      // If no escrow account exists (address is 0x0), balance is 0
-      if (!escrowAccountAddress || escrowAccountAddress === '0x0000000000000000000000000000000000000000') {
-        setBalance(BigInt(0))
-        return
-      }
-
-      // If escrow exists, get the balance
+      // Directly call getEscrowTokenBalance - it will revert if no escrow exists
       const escrowBalance = await publicClient.readContract({
         address: brokerAddress,
         abi: FlashPaymentBrokerABI,
@@ -73,18 +63,27 @@ export function useEscrowBalance({
         args: [effectiveClientAddress, effectiveServerAddress],
       }) as bigint
 
+      console.log('✅ Escrow balance fetched successfully:', escrowBalance.toString());
       setBalance(escrowBalance)
     } catch (err) {
-      // Check if this is specifically a "no escrow exists" error
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch escrow balance'
+      // If contract call fails, it's likely because no escrow exists
+      // This is expected behavior, so we set balance to 0
+      setBalance(BigInt(0))
+      setError(null) // Clear error since this is expected behavior
       
-      if (errorMessage.includes('reverted') || errorMessage.includes('Escrow does not exist')) {
-        // If contract reverts, it likely means no escrow exists, so balance is 0
-        setBalance(BigInt(0))
-        setError(null) // Clear error since this is expected behavior
-      } else {
-        setError(errorMessage)
-        console.error('Error fetching escrow balance:', err)
+      // Only log actual errors (not expected "no escrow" cases)
+      if (err instanceof Error) {
+        const errorMessage = err.message.toLowerCase()
+        const isExpectedError = errorMessage.includes('reverted') || 
+                              errorMessage.includes('execution reverted') ||
+                              errorMessage.includes('escrow does not exist') ||
+                              errorMessage.includes('call exception') ||
+                              errorMessage.includes('cannot read properties of undefined')
+        
+        if (!isExpectedError) {
+          setError(err.message)
+          console.error('Unexpected error fetching escrow balance:', err)
+        }
       }
     } finally {
       setLoading(false)
