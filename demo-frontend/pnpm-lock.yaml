@@ -17,6 +17,9 @@ importers:
       '@coinbase/cdp-react':
         specifier: ^0.0.20
         version: 0.0.20(@coinbase/cdp-core@0.0.20(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@coinbase/cdp-hooks@0.0.20(@coinbase/cdp-core@0.0.20(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76))(react@19.1.0))(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@coinbase/cdp-wagmi':
+        specifier: ^0.0.20
+        version: 0.0.20(@coinbase/cdp-core@0.0.20(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@tanstack/react-query@5.85.3(react@19.1.0))(react@19.1.0)(viem@2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.16.3(@tanstack/query-core@5.85.3)(@tanstack/react-query@5.85.3(react@19.1.0))(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))
       '@coinbase/onchainkit':
         specifier: ^0.38.19
         version: 0.38.19(@farcaster/miniapp-sdk@0.1.8(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(@tanstack/query-core@5.85.3)(@types/react@19.1.10)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76)
@@ -35,6 +38,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.1.7(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-query':
+        specifier: ^5.85.3
+        version: 5.85.3(react@19.1.0)
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -149,6 +155,15 @@ packages:
       '@coinbase/cdp-core': ^0.0.20
       '@coinbase/cdp-hooks': ^0.0.20
       react: '>=18.2.0'
+
+  '@coinbase/cdp-wagmi@0.0.20':
+    resolution: {integrity: sha512-vKRopctVzMv8u5WjPuILpfNjjI/1FwO0QqloaCgqhe8GWH8EJQMvmmEv3FsTuizNEQof6e/pVyEvlMjSbra6wQ==}
+    peerDependencies:
+      '@coinbase/cdp-core': ^0.0.20
+      '@tanstack/react-query': ^5.0.0
+      react: '>=18.2.0'
+      viem: ^2.33.0
+      wagmi: ^2.16.0
 
   '@coinbase/onchainkit@0.38.19':
     resolution: {integrity: sha512-4uiujoTO5/8/dpWVZoTlBC7z0Y1N5fgBYDR6pKN/r6a8pX83ObUuOSGhSzJ8Xbu8NpPU6TXX+VuzLiwiLg/irg==}
@@ -3879,6 +3894,14 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
       - react-dom
+
+  '@coinbase/cdp-wagmi@0.0.20(@coinbase/cdp-core@0.0.20(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76))(@tanstack/react-query@5.85.3(react@19.1.0))(react@19.1.0)(viem@2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(wagmi@2.16.3(@tanstack/query-core@5.85.3)(@tanstack/react-query@5.85.3(react@19.1.0))(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76))':
+    dependencies:
+      '@coinbase/cdp-core': 0.0.20(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76)
+      '@tanstack/react-query': 5.85.3(react@19.1.0)
+      react: 19.1.0
+      viem: 2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+      wagmi: 2.16.3(@tanstack/query-core@5.85.3)(@tanstack/react-query@5.85.3(react@19.1.0))(@types/react@19.1.10)(bufferutil@4.0.9)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.33.3(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76)
 
   '@coinbase/onchainkit@0.38.19(@farcaster/miniapp-sdk@0.1.8(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))(@tanstack/query-core@5.85.3)(@types/react@19.1.10)(bufferutil@4.0.9)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:

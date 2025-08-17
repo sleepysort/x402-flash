@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
-import { useBalance, useChainId } from 'wagmi';
+import { useBalance, useChainId, useAccount } from 'wagmi';
 import { AuthButton } from '@coinbase/cdp-react/components/AuthButton';
-import { useIsSignedIn, useEvmAddress } from '@coinbase/cdp-hooks';
 import { Button } from '@/components/ui/button';
 import { Copy, Check } from 'lucide-react';
 import { getUSDCAddress } from '@/lib/circle-paymaster';
@@ -11,15 +10,11 @@ export function Header() {
   const chainId = useChainId();
   const [copied, setCopied] = useState(false);
   
-  // CDP Authentication hooks ONLY
-  const isSignedIn = useIsSignedIn();
-  const cdpEvmAddressData = useEvmAddress();
+  // Use Wagmi's unified account state - this will be connected when CDP user signs in
+  const { address, isConnected } = useAccount();
   
-  // Extract the actual address from the CDP hook result
-  const cdpEvmAddress = cdpEvmAddressData?.evmAddress;
-  
-  // Use CDP address only - no fallback
-  const displayAddress = isSignedIn && cdpEvmAddress ? cdpEvmAddress : null;
+  // Use the unified wallet address from Wagmi
+  const displayAddress = isConnected && address ? address : null;
   
   const { data: balance } = useBalance({
     address: displayAddress as `0x${string}`,
@@ -41,9 +36,9 @@ export function Header() {
   return (
     <div className="flex items-center justify-between p-4">
       <div className="flex-1 flex items-center justify-end">
-        {/* Show CDP authentication status only */}
+        {/* Show unified wallet connection status */}
         <div className="mr-4 text-xs text-gray-500">
-          CDP: {isSignedIn ? 'Signed In' : 'Not Signed In'}
+          Wallet: {isConnected ? 'Connected' : 'Not Connected'}
         </div>
         
         {displayAddress && (
