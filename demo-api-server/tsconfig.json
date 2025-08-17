@@ -8,6 +8,7 @@
         "outDir": "dist",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
+        "skipLibCheck": true,
     },
     "lib": [
         "es2015"
