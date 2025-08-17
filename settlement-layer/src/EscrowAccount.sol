@@ -25,6 +25,11 @@ contract EscrowAccount {
         serverClosed = false;
     }
 
+    /**
+     * Pays the server from the escrow account.
+     *
+     * @param amount The amount of tokens to be paid to the server.
+     */
     function compensateServer(uint256 amount) public onlyContractOwner {
         require(
             token.balanceOf(address(this)) >= amount,
