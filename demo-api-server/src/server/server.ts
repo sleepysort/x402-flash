@@ -29,10 +29,13 @@ export class Server {
           network: "base-sepolia",
           config: {
             description: "Basic hello world endpoint",
-            // inputSchema: {},
-            outputSchema: {
-              type: "string",
-            }
+          }
+        },
+        "GET /random": {
+          price: "$0.0001",
+          network: "base-sepolia",
+          config: {
+            description: "Get a random number from 0-199",
           }
         },
       },
