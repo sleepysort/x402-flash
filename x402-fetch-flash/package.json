@@ -1,0 +1,18 @@
+{
+  "name": "x402-fetch-flash",
+  "version": "0.0.1",
+  "description": "Wraps the builtin fetch function to support x402 using the experimental flash scheme.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sleepysort",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  },
+  "dependencies": {
+    "viem": "^2.33.3",
+    "x402-fetch": "^0.5.1"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "x402-express-flash",
+  "version": "0.0.1",
+  "description": "Express middleware that enables micropayments using x402 with additional support for the experimental flash scheme.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "sleepysort",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "viem": "^2.33.3",
+    "x402-express": "^0.4.1"
+  }
+}
