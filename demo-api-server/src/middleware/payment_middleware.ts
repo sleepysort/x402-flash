@@ -1,8 +1,25 @@
-import { Express, Request, Response, NextFunction } from 'express';
-import { Hex, keccak256 } from 'viem';
+import { Request, Response, NextFunction } from 'express';
+import { createWalletClient, Hex, http, keccak256 } from 'viem';
 
 import { paymentMiddleware } from 'x402-express';
-import { FlashFacilitator } from '../facilitator/flash_facilitator';
+
+const BASE_SEPOLIA_RPC_URL = "https://sepolia-preconf.base.org";
+const privateKey = process.env.CANARY_WALLET_PRIVATE_KEY;
+
+const client = createWalletClient({
+  chain: {
+    id: 84532,
+    name: "base-sepolia",
+    network: "base-sepolia",
+    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+    rpcUrls: {
+      default: { http: [BASE_SEPOLIA_RPC_URL] },
+      public: { http: [BASE_SEPOLIA_RPC_URL] },
+    },
+  },
+  transport: http(BASE_SEPOLIA_RPC_URL),
+  account: privateKey as Hex,
+});
 
 export interface PaymentMiddlewareConfig {
   [route: string]: {
@@ -57,11 +74,7 @@ export function multiSchemePaymentMiddleware(paymentAddress, routes: any, config
     }
 
     const precalculatedTxHash = keccak256(paymentObj.payload);
-    const facilitator = new FlashFacilitator();
-    facilitator.submitSignedTx(paymentObj.payload)
-      .then((txHash) => {
-        console.log(`Submitted signed transaction: ${txHash}`);
-      })
+    client.sendRawTransaction({ serializedTransaction: paymentObj.payload })
       .catch((err) => {
         console.log(`Transaction failed to submit: ${(err as Error).message}`);
       });
