@@ -4,12 +4,12 @@ import { baseSepolia } from "viem/chains";
 import { wrapFetchWithPayment, decodeXPaymentResponse } from "x402-fetch";
 import { createPublicClient, encodeFunctionData, Hex, http, PrivateKeyAccount } from "viem";
 
-
 const args = commandLineArgs([
   { name: 'key', alias: 'k', type: String },
   { name: 'url', type: String },
-  { name: 'flash', alias: 'f', type: Boolean, defaultValue: false }
+  { name: 'flash', alias: 'f', type: Boolean, defaultValue: false },
 ]);
+
 const account = privateKeyToAccount(args.key);
 
 const fetchWithPayment = args.flash ? wrapFetchWithFlashPayment(fetch, account) : wrapFetchWithPayment(fetch, account);
@@ -18,10 +18,12 @@ const t1 = Date.now();
 const response = await fetchWithPayment(args.url, { method: "GET" })
 const t2 = Date.now();
 const body = await response.text();
-const paymentResponse = decodeXPaymentResponse(response.headers.get("x-payment-response")!);
-
+const xPaymentResponse = response.headers.get("x-payment-response");
+if (xPaymentResponse) {
+  const paymentResponse = decodeXPaymentResponse(xPaymentResponse);
+  console.log(paymentResponse);
+}
 console.log(body);
-console.log(paymentResponse);
 console.log(`Time taken: ${t2 - t1} ms`);
 
 export function wrapFetchWithFlashPayment(
@@ -33,6 +35,17 @@ export function wrapFetchWithFlashPayment(
     transport: http("https://sepolia-preconf.base.org"),
   });
   return async (input: RequestInfo | URL, init: RequestInit = {}) => {
+    const firstCall = fetchFn(input, init);
+    const firstResponse = await firstCall;
+    if (firstResponse.status !== 402) {
+      return firstCall;
+    }
+    const paymentRequirements: { maxAmountRequired: string }[] = (await firstResponse.json()).accepts ?? [];
+    if (paymentRequirements.length === 0) {
+      throw new Error("Received 402 but no payment requirements were provided.");
+    }
+    const amount = BigInt(parseInt(paymentRequirements[0].maxAmountRequired));
+
     // Prepare settlePayment calldata
     const calldata = encodeFunctionData({
       abi: [
@@ -48,7 +61,7 @@ export function wrapFetchWithFlashPayment(
         },
       ],
       functionName: "settlePayment",
-      args: ["0xb4bd6078a915b9d71de4Bc857063DB20dd1ad4A3", 1000n],
+      args: ["0xb4bd6078a915b9d71de4Bc857063DB20dd1ad4A3", amount],
     });
 
     const nonce = await client.getTransactionCount({ address: account.address });
@@ -78,4 +91,12 @@ export function wrapFetchWithFlashPayment(
     // Call fetch with new headers
     return fetchFn(input, { ...init, headers });
   };
+}
+
+function toBase64(data: string): string {
+  return Buffer.from(data).toString("base64");
+}
+
+function fromBase64(data: string): string {
+  return Buffer.from(data, "base64").toString("utf-8");
 }
