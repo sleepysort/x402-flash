@@ -8,7 +8,7 @@ const server = new Server(express());
 server.setupPaymentMiddleware();
 server.install("/hello", new HelloModule());
 
-server.start(3000);
+server.start(3002);
 
 /** Initializes root level DI container bindings. */
 function setupRootBindings() {
