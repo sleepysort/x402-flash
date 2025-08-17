@@ -74,9 +74,11 @@ export function USDCTopup() {
   const { 
     balance: escrowBalance, 
     loading: balanceLoading, 
-    error: balanceError 
+    error: balanceError,
+    refetch: refetchEscrowBalance
   } = useEscrowBalance({
-    enabled: isConnected && !!address
+    enabled: isConnected && !!address,
+    refetchInterval: 5000, // Increased to 5 seconds to reduce load
   });
 
   return (
@@ -250,6 +252,22 @@ export function USDCTopup() {
         onOpenChange={setIsDialogOpen}
         usdcAmount={usdcAmount}
         throughputAmount={throughputAmount}
+        onSuccess={() => {
+          console.log('🎯 TopUp success callback triggered');
+          console.log('Current escrow balance before refetch:', escrowBalance);
+          
+          // Add a longer delay to account for blockchain confirmation and processing
+          setTimeout(() => {
+            console.log('⏰ Refetching escrow balance after 5s delay');
+            refetchEscrowBalance();
+          }, 5000); // Increased delay to 5 seconds
+          
+          // Also refetch after a shorter delay in case the first one works
+          setTimeout(() => {
+            console.log('⏰ Second refetch after 10s delay');
+            refetchEscrowBalance();
+          }, 10000);
+        }}
       />
 
       {/* Information Footer */}
