@@ -15,6 +15,8 @@ import { CDPHooksProvider } from '@coinbase/cdp-hooks';
 // CDP Configuration
 const cdpConfig: Config = {
   projectId: process.env.NEXT_PUBLIC_CDP_PROJECT_ID || '',
+  // Use our proxy API endpoint instead of direct CDP API calls
+  baseUrl: typeof window !== 'undefined' ? `${window.location.origin}/api/cdp` : '/api/cdp',
 };
 
 // Create the CDP-Wagmi connector
