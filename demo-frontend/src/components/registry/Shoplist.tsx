@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, Search, Grid3X3, List, Eye, AlertCircle, RefreshCw, Server } from 'lucide-react';
+import { ItemDialog } from './ItemDialog';
 
 type ViewMode = 'table' | 'grid';
 
@@ -29,12 +30,10 @@ type ViewMode = 'table' | 'grid';
 interface ShopItem {
   id: string;
   name: string;
-  description: string;
+  walletAccount: string;
+  escrowAccountOpened: boolean;
   pricePerCall: number;
   nonSettlementLatency: string;
-  walletAccount: string;
-  status: 'active' | 'inactive';
-  category: string;
 }
 
 interface ShoplistProps {
@@ -44,40 +43,41 @@ interface ShoplistProps {
 export function Shoplist({ onItemClick }: ShoplistProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Demo server data
   const shopItems: ShopItem[] = [
     {
       id: 'demo-server-1',
       name: 'Demo Server',
-      description: 'High-performance demonstration server for testing and development purposes',
+      walletAccount: '0xb4bd6078a915b9d71de4Bc857063DB20dd1ad4A3',
+      escrowAccountOpened: true,
       pricePerCall: 0.001,
-      nonSettlementLatency: '50ms',
-      walletAccount: '0x742d35Cc6B...8429EBaF',
-      status: 'active',
-      category: 'Development'
+      nonSettlementLatency: '50ms'
     }
   ];
 
   const filteredItems = shopItems.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.category.toLowerCase().includes(searchTerm.toLowerCase())
+    item.walletAccount.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusBadge = (status: string) => {
-    return status === 'active' ? (
-      <Badge variant="default">Active</Badge>
+  const getEscrowStatusBadge = (opened: boolean) => {
+    return opened ? (
+      <Badge variant="default">Yes</Badge>
     ) : (
-      <Badge variant="secondary">Inactive</Badge>
+      <Badge variant="secondary">No</Badge>
     );
   };
 
   const formatPrice = (price: number) => {
-    return `$${price.toFixed(3)}`;
+    return `$${price.toFixed(6)}`;
   };
 
   const handleItemClick = (itemId: string) => {
+    setSelectedItemId(itemId);
+    setIsDialogOpen(true);
     if (onItemClick) {
       onItemClick(itemId);
     }
@@ -87,19 +87,18 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
     <Table className="w-full">
       <TableHeader>
         <TableRow>
-          <TableHead className="min-w-[200px]">Service</TableHead>
-          <TableHead className="min-w-[300px]">Description</TableHead>
+          <TableHead className="min-w-[200px]">Name</TableHead>
+          <TableHead className="min-w-[250px]">Wallet Address</TableHead>
+          <TableHead className="min-w-[150px]">Escrow Account Opened</TableHead>
           <TableHead className="min-w-[120px]">Price per Call</TableHead>
-          <TableHead className="min-w-[150px]">Non Settlement Latency</TableHead>
-          <TableHead className="min-w-[180px]">Wallet Account</TableHead>
-          <TableHead className="min-w-[100px]">Status</TableHead>
+          <TableHead className="min-w-[150px]">Latency</TableHead>
           <TableHead className="w-[100px] min-w-[100px]">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {filteredItems.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={7} className="text-center py-8">
+            <TableCell colSpan={6} className="text-center py-8">
               <div className="flex flex-col items-center">
                 <Search className="h-12 w-12 text-muted-foreground mb-2" />
                 <p className="text-muted-foreground">
@@ -117,14 +116,14 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
               <TableCell className="min-w-[200px]">
                 <div className="flex items-center space-x-2">
                   <Server className="h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium">{item.name}</div>
-                    <div className="text-sm text-muted-foreground">{item.category}</div>
-                  </div>
+                  <div className="font-medium">{item.name}</div>
                 </div>
               </TableCell>
-              <TableCell className="min-w-[300px]">
-                <div className="text-sm">{item.description}</div>
+              <TableCell className="min-w-[250px]">
+                <div className="font-mono text-sm">{item.walletAccount}</div>
+              </TableCell>
+              <TableCell className="min-w-[150px]">
+                {getEscrowStatusBadge(item.escrowAccountOpened)}
               </TableCell>
               <TableCell className="min-w-[120px]">
                 <div className="font-medium">{formatPrice(item.pricePerCall)}</div>
@@ -132,10 +131,6 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
               <TableCell className="min-w-[150px]">
                 <Badge variant="outline">{item.nonSettlementLatency}</Badge>
               </TableCell>
-              <TableCell className="min-w-[180px]">
-                <div className="font-mono text-sm">{item.walletAccount}</div>
-              </TableCell>
-              <TableCell className="min-w-[100px]">{getStatusBadge(item.status)}</TableCell>
               <TableCell className="w-[100px] min-w-[100px]" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -190,15 +185,11 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
                   <Server className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <CardTitle className="text-lg">{item.name}</CardTitle>
-                    <CardDescription className="text-sm">{item.category}</CardDescription>
                   </div>
                 </div>
-                {getStatusBadge(item.status)}
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
-              
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price per Call:</span>
@@ -207,6 +198,10 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Latency:</span>
                   <Badge variant="outline" className="text-xs">{item.nonSettlementLatency}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Escrow Account:</span>
+                  {getEscrowStatusBadge(item.escrowAccountOpened)}
                 </div>
                 <div className="flex flex-col space-y-1">
                   <span className="text-muted-foreground text-xs">Wallet Account:</span>
@@ -266,6 +261,13 @@ export function Shoplist({ onItemClick }: ShoplistProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Item Dialog */}
+      <ItemDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        itemId={selectedItemId}
+      />
     </div>
   );
 }

@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useBalance, useChainId, useAccount } from 'wagmi';
 import { AuthButton } from '@coinbase/cdp-react/components/AuthButton';
 import { Button } from '@/components/ui/button';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Github } from 'lucide-react';
 import { getUSDCAddress } from '@/lib/circle-paymaster';
 
 export function Header() {
@@ -35,11 +36,26 @@ export function Header() {
 
   return (
     <div className="flex items-center justify-between p-4">
+      <div className="flex-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          asChild
+          className="hover:bg-gray-100"
+        >
+          <Link
+            href="https://github.com/sleepysort/x402-flashh"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <Github className="h-5 w-5" />
+            <span className="text-sm">GitHub</span>
+          </Link>
+        </Button>
+      </div>
+      <h1 className="text-2xl font-bold text-gray-800">x402-flash</h1>
       <div className="flex-1 flex items-center justify-end">
-        {/* Show unified wallet connection status */}
-        <div className="mr-4 text-xs text-gray-500">
-          Wallet: {isConnected ? 'Connected' : 'Not Connected'}
-        </div>
         
         {displayAddress && (
           <div className="flex flex-col items-end mr-3">

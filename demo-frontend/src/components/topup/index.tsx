@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
+import { useExportEvmAccount, useEvmAddress } from "@coinbase/cdp-hooks";
 
 // shadcn/ui components
 import { Button } from '@/components/ui/button';
@@ -23,12 +24,36 @@ const CHAIN_ID = 84532; // Base Sepolia
 
 export function USDCTopup() {
   const { address, isConnected } = useAccount();
+  const { exportEvmAccount } = useExportEvmAccount();
+  const { evmAddress } = useEvmAddress();
   const [usdcAmount, setUsdcAmount] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [errors, setErrors] = useState<{amount?: string}>({});
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
 
   // Console log the sender wallet address
   console.log('Sender wallet address:', address);
+
+  // Export key handler
+  const handleExportKey = async () => {
+    if (!evmAddress) return;
+    setExportLoading(true);
+    setExportMessage(null);
+    try {
+      const { privateKey } = await exportEvmAccount({ evmAccount: evmAddress });
+      await navigator.clipboard.writeText(privateKey);
+      setExportMessage("Private key copied to clipboard");
+      setTimeout(() => {
+        navigator.clipboard.writeText('');
+        setExportMessage(null);
+      }, 10000);
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
 
   // Use the throughput conversion hook with new real metrics
   const { 
@@ -57,13 +82,13 @@ export function USDCTopup() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
       {/* Main Cards Layout */}
-      <div className="flex items-center justify-center gap-6">
+      <div className="flex items-start justify-center gap-6">
         {/* Left Card - Amount of USDC */}
-        <Card className="h-fit flex-1 max-w-md">
+        <Card className="w-80 h-96 flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">USDC Escrow Funding</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 flex-1">
             {/* Escrow Balance Display */}
             {isConnected && (
               <div className="bg-muted/30 rounded-lg p-4 border">
@@ -145,7 +170,7 @@ export function USDCTopup() {
         </Card>
 
         {/* Approximately Equal Symbol */}
-        <div className="flex items-center justify-center p-4">
+        <div className="flex items-center justify-center p-4 h-96">
           <EqualApproximately 
             size={32} 
             className="text-muted-foreground"
@@ -153,12 +178,12 @@ export function USDCTopup() {
         </div>
 
         {/* Right Card - Throughput Performance */}
-        <Card className="h-fit flex-1 max-w-md">
+        <Card className="w-80 h-96 flex flex-col">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Throughput Performance</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="flex-1">
+            <div className="space-y-4 h-full flex flex-col">
               {/* Actual Throughput Display */}
               <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
                 <div className="text-center">
@@ -230,12 +255,41 @@ export function USDCTopup() {
       {/* Information Footer */}
       <Alert variant="default" className="mt-8">
         <AlertDescription>
-          <p className="font-medium mb-2">Flash Payment Information</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-            <p>• Network: Base Sepolia (Chain ID: {CHAIN_ID})</p>
-            <p>• Escrow-based payment system</p>
-            <p>• Real-time throughput calculations</p>
-            <p>• Significantly reduced API latency</p>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+            <div className="flex-1">
+              <p className="font-medium mb-2">Flash Payment Information</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                <p>• Network: Base Sepolia (Chain ID: {CHAIN_ID})</p>
+                <p>• Escrow-based payment system</p>
+                <p>• Real-time throughput calculations</p>
+                <p>• Significantly reduced API latency</p>
+              </div>
+            </div>
+            
+            {/* Export Key Section */}
+            <div className="flex flex-col items-end gap-2">
+              <Button 
+                onClick={handleExportKey}
+                disabled={exportLoading || !evmAddress}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                {exportLoading ? 'Exporting...' : '🔐 Export Key'}
+              </Button>
+              
+              {exportMessage && (
+                <p className="text-xs text-green-600">{exportMessage}</p>
+              )}
+              
+              {!evmAddress && (
+                <p className="text-xs text-muted-foreground">Connect wallet to export</p>
+              )}
+              
+              <p className="text-xs text-muted-foreground max-w-48 text-right">
+                Export private key for X402 payments (dev only)
+              </p>
+            </div>
           </div>
         </AlertDescription>
       </Alert>

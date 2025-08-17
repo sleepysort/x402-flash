@@ -9,13 +9,13 @@ export const FLASH_PAYMENT_BROKER_ADDRESSES = {
 export const MVP_SERVER_CONFIG = {
   url: '/api/flash-server',
   walletAddress: '0xb4bd6078a915b9d71de4Bc857063DB20dd1ad4A3' as Address,
-  apiEndpoint: '?path=/hello/exact',
+  apiEndpoint: '?path=/hello', // Fixed: removed /exact to match actual server endpoints
 } as const
 
 export function getFlashPaymentBrokerAddress(chainId: number): Address {
   const address = FLASH_PAYMENT_BROKER_ADDRESSES[chainId as keyof typeof FLASH_PAYMENT_BROKER_ADDRESSES]
   if (!address) {
-    throw new Error(`FlashPaymentBroker not deployed on chain ${chainId}`)
+    throw new Error(`FlashPaymentBroker not deployed on chain ${chainId}. Supported chains: ${Object.keys(FLASH_PAYMENT_BROKER_ADDRESSES).join(', ')}`)
   }
   return address
 }
