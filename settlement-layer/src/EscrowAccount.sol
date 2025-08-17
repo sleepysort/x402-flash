@@ -4,9 +4,10 @@ pragma solidity ^0.8.13;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract EscrowAccount {
-    address clientOwner;
-    address serverOwner;
-    IERC20 token;
+    address immutable contractOwner;
+    address immutable clientOwner;
+    address immutable serverOwner;
+    IERC20 immutable token;
 
     bool clientClosed;
     bool serverClosed;
@@ -16,6 +17,7 @@ contract EscrowAccount {
         address serverOwner_,
         address tokenAddress_
     ) {
+        contractOwner = msg.sender;
         clientOwner = clientOwner_;
         serverOwner = serverOwner_;
         token = IERC20(tokenAddress_);
@@ -23,15 +25,16 @@ contract EscrowAccount {
         serverClosed = false;
     }
 
-    function compensateServer(uint256 amount) public onlyClientOwner {
+    function compensateServer(uint256 amount) public onlyContractOwner {
         require(
             token.balanceOf(address(this)) >= amount,
             "Insufficient balance in escrow"
         );
-        require(
-            token.transferFrom(address(this), serverOwner, amount),
-            "Token transfer failed"
-        );
+        require(token.transfer(serverOwner, amount), "Token transfer failed");
+    }
+
+    function getContractOwner() public view returns (address) {
+        return contractOwner;
     }
 
     function getEscrowTokenBalance() public view returns (uint256) {
@@ -42,12 +45,12 @@ contract EscrowAccount {
         return address(token);
     }
 
-    function clientCloseEscrow() public onlyClientOwner {
+    function clientCloseEscrow() public onlyContractOwner {
         clientClosed = true;
         restoreRemainingIfClosed();
     }
 
-    function serverCloseEscrow() public onlyServerOwner {
+    function serverCloseEscrow() public onlyContractOwner {
         serverClosed = true;
         restoreRemainingIfClosed();
     }
@@ -58,18 +61,10 @@ contract EscrowAccount {
         }
     }
 
-    modifier onlyClientOwner() {
+    modifier onlyContractOwner() {
         require(
-            msg.sender == clientOwner,
-            "Only client owner can call this function"
-        );
-        _;
-    }
-
-    modifier onlyServerOwner() {
-        require(
-            msg.sender == serverOwner,
-            "Only server owner can call this function"
+            msg.sender == contractOwner,
+            "Only contract owner can call this function"
         );
         _;
     }

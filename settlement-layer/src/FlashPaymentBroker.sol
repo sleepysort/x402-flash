@@ -7,7 +7,7 @@ import {EscrowAccount} from "./EscrowAccount.sol";
 
 contract FlashPaymentBroker {
     // Mapping of client address to server address to escrow account.
-    mapping(address => mapping(address => EscrowAccount)) escrowAccounts;
+    mapping(address => mapping(address => EscrowAccount)) public escrowAccounts;
 
     function openEscrow(
         address paymentAddress,
@@ -19,7 +19,7 @@ contract FlashPaymentBroker {
             revert("Insufficient allowance");
         }
         require(
-            address(escrowAccounts[msg.sender][paymentAddress]) != address(0x0),
+            address(escrowAccounts[msg.sender][paymentAddress]) == address(0x0),
             "Escrow already exists for this client-server pair"
         );
 
@@ -53,8 +53,14 @@ contract FlashPaymentBroker {
             "Insufficient allowance"
         );
 
-        // TODO: Mentor mentioned transferFrom could possibly error.
-        if (!token.transferFrom(msg.sender, paymentAddress, amount)) {
+        // TODO: Mentor mentioned transferFrom could possibly error
+        try token.transferFrom(msg.sender, paymentAddress, amount) returns (
+            bool success
+        ) {
+            if (!success) {
+                currentEscrowAccount.compensateServer(amount);
+            }
+        } catch {
             currentEscrowAccount.compensateServer(amount);
         }
     }
@@ -64,5 +70,37 @@ contract FlashPaymentBroker {
         address server
     ) public view returns (address) {
         return address(escrowAccounts[client][server]);
+    }
+
+    function getEscrowTokenBalance(
+        address client,
+        address server
+    ) public view returns (uint256) {
+        return escrowAccounts[client][server].getEscrowTokenBalance();
+    }
+
+    function getEscrowTokenAddress(
+        address client,
+        address server
+    ) public view returns (address) {
+        return escrowAccounts[client][server].getEscrowTokenAddress();
+    }
+
+    function clientCloseEscrow(address server) public {
+        EscrowAccount currentEscrowAccount = escrowAccounts[msg.sender][server];
+        require(
+            address(currentEscrowAccount) != address(0x0),
+            "Escrow does not exist"
+        );
+        currentEscrowAccount.clientCloseEscrow();
+    }
+
+    function serverCloseEscrow(address client) public {
+        EscrowAccount currentEscrowAccount = escrowAccounts[client][msg.sender];
+        require(
+            address(currentEscrowAccount) != address(0x0),
+            "Escrow does not exist"
+        );
+        currentEscrowAccount.serverCloseEscrow();
     }
 }
