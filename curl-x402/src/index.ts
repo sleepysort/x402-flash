@@ -13,17 +13,15 @@ const args = commandLineArgs([
   { name: 'url', type: String },
 ]);
 
+const t1 = Date.now();
 const account = privateKeyToAccount(args.key);
 const fetchWithPayment = wrapFetchWithPayment(fetch, account);
 
 const response = await fetchWithPayment(args.url, { method: "GET" })
+const t2 = Date.now();
 const body = await response.text();
-console.log(body);
-
 const paymentResponse = decodeXPaymentResponse(response.headers.get("x-payment-response")!);
-console.log(paymentResponse);
 
-await new Promise(resolve => rl.question("Press any key to exit...", ans => {
-  rl.close();
-  resolve(ans);
-}));
+console.log(body);
+console.log(paymentResponse);
+console.log(`Time taken: ${t2 - t1} ms`);
