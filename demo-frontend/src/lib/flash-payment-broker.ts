@@ -2,7 +2,7 @@ import { Address } from 'viem'
 
 // FlashPaymentBroker contract addresses by chain ID
 export const FLASH_PAYMENT_BROKER_ADDRESSES = {
-  84532: '0x1598fB0500d16E598C13F97b261025a2DF60BF37' as Address, // Base Sepolia - TODO: Replace with actual deployed address
+  84532: '0x9904d883ea8037739c0946cac52c42b38165360a' as Address, // Base Sepolia - TODO: Replace with actual deployed address
 } as const
 
 // Server configuration for MVP

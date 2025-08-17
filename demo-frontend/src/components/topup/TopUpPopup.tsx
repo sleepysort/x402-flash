@@ -9,7 +9,7 @@ import {
 } from '@coinbase/onchainkit/transaction';
 import { FundButton, getOnrampBuyUrl } from '@coinbase/onchainkit/fund';
 import { useState, useCallback, useMemo } from 'react';
-import { useEvmAddress } from '@coinbase/cdp-hooks';
+import { useAccount } from 'wagmi';
 import { encodeFunctionData, parseUnits } from 'viem';
 import { useCoinbaseOnramp } from '@/hooks/useCoinbaseOnramp';
 
@@ -57,8 +57,7 @@ interface TopUpPopupProps {
 }
 
 export function TopUpPopup({ isOpen, onOpenChange, usdcAmount, throughputAmount }: TopUpPopupProps) {
-  const cdpEvmAddressData = useEvmAddress();
-  const address = cdpEvmAddressData?.evmAddress;
+  const { address, isConnected } = useAccount();
   const [selectedTab, setSelectedTab] = useState('usdc');
   const { createTokenSession, loading: onrampLoading, error: onrampError } = useCoinbaseOnramp();
 
@@ -204,7 +203,7 @@ export function TopUpPopup({ isOpen, onOpenChange, usdcAmount, throughputAmount 
                       onStatus={handleTransactionStatus}
                     >
                       <TransactionButton
-                        disabled={!usdcAmount || !address}
+                        disabled={!usdcAmount || !address || !isConnected}
                         className="w-full"
                         text="Pay with USDC"
                       />
@@ -216,7 +215,7 @@ export function TopUpPopup({ isOpen, onOpenChange, usdcAmount, throughputAmount 
                   )}
 
                   {/* Connection Status */}
-                  {!address && (
+                  {!isConnected && (
                     <Alert variant="destructive">
                       <AlertDescription>
                         Please connect your wallet to stake USDC
@@ -259,7 +258,7 @@ export function TopUpPopup({ isOpen, onOpenChange, usdcAmount, throughputAmount 
                   </div>
 
                   {/* Coinbase Onramp Button */}
-                  {address ? (
+                  {isConnected ? (
                     <Button 
                       onClick={handleCoinbaseOnramp}
                       disabled={onrampLoading || !usdcAmount || parseFloat(usdcAmount) <= 0}
